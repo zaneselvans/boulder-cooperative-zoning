@@ -20,17 +20,17 @@ class ZoningInfo:
     error_ids = []
 
     for i in self.ids[:20]:
+      try:
         r = requests.get(QUERY.format(self.url_name, i))
         j = json.loads(r.text)
-        try:
-            attributes = j['features'][0]['attributes']
-            self.zoning[i] =       attributes['ZONING']
-            self.address[i] =      attributes['ADDRESS']
-            self.lot_size[i] =     attributes['AREASQFT']
-            self.neighborhood[i] = attributes['NEIGHBRHD']
-            print "{:20} -> {}".format(attributes['ADDRESS'], attributes['ZONING'])
-        except (KeyError, IndexError):
-            error_ids.append(i)
+        attributes = j['features'][0]['attributes']
+        self.zoning[i] =       attributes['ZONING']
+        self.address[i] =      attributes['ADDRESS']
+        self.lot_size[i] =     attributes['AREASQFT']
+        self.neighborhood[i] = attributes['NEIGHBRHD']
+        print "{:20} -> {}".format(attributes['ADDRESS'], attributes['ZONING'])
+      except (KeyError, IndexError):
+        error_ids.append(i)
     print "\nError ASR_ID's: {}\n".format(error_ids)
     print "Done getting all zones!"
 
