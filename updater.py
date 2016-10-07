@@ -1,6 +1,7 @@
 import pandas as pd
 import requests
 import json
+from datetime import datetime
 
 QUERY = 'https://gisweb.bouldercolorado.gov/arcgis/rest/services/pds/{}/MapServer/1/query?where=ASR_ID+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
@@ -8,6 +9,7 @@ file_name = 'ResidentialBuildingSizes20161003.xlsx'
 
 class ZoningInfo:
   def __init__(self):
+    self.start_time = datetime.now()
     self.df = pd.read_excel("input/{}".format(file_name), converters={'ASR_ID': str})
     self.ids = self.df['ASR_ID']
     self.zoning = {}
@@ -37,7 +39,7 @@ class ZoningInfo:
           self.rental_license_number[i] = attributes['PROP_NO']
         except (KeyError, IndexError):
           None
-        print "{:10} {:20} {:10} {}".format(
+        print "{:10} {:30} {:10} {}".format(
           i,
           self.address[i],
           self.zoning[i],
@@ -57,6 +59,7 @@ class ZoningInfo:
 
     self.df.to_excel(out_file_name, index=False)
     print "Done writing to {}!".format(out_file_name)
+    print "Started at {} and ended at {}".format(self.start_time.isoformat(), datetime.now().isoformat())
 
 
 zoning_info = ZoningInfo()
