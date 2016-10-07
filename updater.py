@@ -20,30 +20,35 @@ class ZoningInfo:
 
   def update(self):
     error_ids = []
+    number_of_ids = len(self.ids)
 
-    for i in self.ids[:20]:
+    # To test out part of data set, do something like:
+    #     for index, asr_id in enumerate(self.ids[:20]):
+    # And this to process all the data (it will take a long time)
+    #     for index, asr_id in enumerate(self.ids[:20]):
+    for index, asr_id in enumerate(self.ids[:20]):
       try:
-        r = requests.get(QUERY.format("AddressSearch", i))
+        r = requests.get(QUERY.format("AddressSearch", asr_id))
         attributes = json.loads(r.text)['features'][0]['attributes']
-        self.zoning[i] =       attributes['ZONING']
-        self.address[i] =      attributes['ADDRESS']
-        self.lot_size[i] =     attributes['AREASQFT']
-        self.neighborhood[i] = attributes['NEIGHBRHD']
+        self.zoning[asr_id] =       attributes['ZONING']
+        self.address[asr_id] =      attributes['ADDRESS']
+        self.lot_size[asr_id] =     attributes['AREASQFT']
+        self.neighborhood[asr_id] = attributes['NEIGHBRHD']
       except (KeyError, IndexError):
-        error_ids.append(i)
+        error_ids.append(asr_id)
       else:
         try:
-          r = requests.get(QUERY.format("RentalInquiry", i))
+          r = requests.get(QUERY.format("RentalInquiry", asr_id))
           attributes = json.loads(r.text)['features'][0]['attributes']
-          self.rental_license_number[i] = attributes['PROP_NO']
-          self.rental_license_number[i] = attributes['PROP_NO']
+          self.rental_license_number[asr_id] = attributes['PROP_NO']
         except (KeyError, IndexError):
           None
-        print "{:10} {:30} {:10} {}".format(
-          i,
-          self.address[i],
-          self.zoning[i],
-          "RENTAL" if i in self.rental_license_number else ""
+        print "{:.6f}% {:10} {:30} {:10} {}".format(
+          index / float(number_of_ids),
+          asr_id,
+          self.address[asr_id],
+          self.zoning[asr_id],
+          "RENTAL" if asr_id in self.rental_license_number else ""
         )
     print "\nError ASR_ID's: {}\n".format(error_ids)
     print "Done getting all zones!"
