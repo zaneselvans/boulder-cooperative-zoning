@@ -4,10 +4,11 @@ import json
 
 QUERY = 'https://gisweb.bouldercolorado.gov/arcgis/rest/services/pds/AddressSearch/MapServer/1/query?where=ASR_ID+%3D+{}&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
+file_name = 'ResidentialBuildingSizes20161003.xlsx'
 
 class ZoningInfo:
   def __init__(self):
-    self.df = pd.read_excel('input/ResidentialBuildingSizes20161003.xlsx', converters={'ASR_ID': str})
+    self.df = pd.read_excel("input/{}".format(file_name), converters={'ASR_ID': str})
     self.ids = self.df['ASR_ID']
     self.zoning = {}
     self.address = {}
@@ -23,9 +24,9 @@ class ZoningInfo:
         j = json.loads(r.text)
         try:
             attributes = j['features'][0]['attributes']
-            self.zoning[i] = attributes['ZONING']
-            self.address[i] = attributes['ADDRESS']
-            self.lot_size[i] = attributes['AREASQFT']
+            self.zoning[i] =       attributes['ZONING']
+            self.address[i] =      attributes['ADDRESS']
+            self.lot_size[i] =     attributes['AREASQFT']
             self.neighborhood[i] = attributes['NEIGHBRHD']
         except IndexError:
             print "No features for {}".format(i)
