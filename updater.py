@@ -10,37 +10,50 @@ class ZoningInfo:
   def __init__(self):
     self.df = pd.read_excel("input/{}".format(file_name), converters={'ASR_ID': str})
     self.ids = self.df['ASR_ID']
-    self.url_name = "AddressSearch"
     self.zoning = {}
     self.address = {}
     self.lot_size = {}
     self.neighborhood = {}
+    self.rental_license_number = {}
 
   def update(self):
     error_ids = []
 
     for i in self.ids[:20]:
       try:
-        r = requests.get(QUERY.format(self.url_name, i))
-        j = json.loads(r.text)
-        attributes = j['features'][0]['attributes']
+        r = requests.get(QUERY.format("AddressSearch", i))
+        attributes = json.loads(r.text)['features'][0]['attributes']
         self.zoning[i] =       attributes['ZONING']
         self.address[i] =      attributes['ADDRESS']
         self.lot_size[i] =     attributes['AREASQFT']
         self.neighborhood[i] = attributes['NEIGHBRHD']
-        print "{:20} -> {}".format(attributes['ADDRESS'], attributes['ZONING'])
       except (KeyError, IndexError):
         error_ids.append(i)
+      else:
+        try:
+          r = requests.get(QUERY.format("RentalInquiry", i))
+          attributes = json.loads(r.text)['features'][0]['attributes']
+          self.rental_license_number[i] = attributes['PROP_NO']
+          self.rental_license_number[i] = attributes['PROP_NO']
+        except (KeyError, IndexError):
+          None
+        print "{:10} {:20} {:10} {}".format(
+          i,
+          self.address[i],
+          self.zoning[i],
+          "RENTAL" if i in self.rental_license_number else ""
+        )
     print "\nError ASR_ID's: {}\n".format(error_ids)
     print "Done getting all zones!"
 
   def write(self):
     out_file_name = 'output/output.xlsx'
     print "Writing them out to {}...".format(out_file_name)
-    self.df['zoning'] =       self.df['ASR_ID'].map(self.zoning)
-    self.df['address'] =      self.df['ASR_ID'].map(self.address)
-    self.df['lot_size'] =     self.df['ASR_ID'].map(self.lot_size)
-    self.df['neighborhood'] = self.df['ASR_ID'].map(self.neighborhood)
+    self.df['zoning'] =         self.df['ASR_ID'].map(self.zoning)
+    self.df['address'] =        self.df['ASR_ID'].map(self.address)
+    self.df['lot_size'] =       self.df['ASR_ID'].map(self.lot_size)
+    self.df['neighborhood'] =   self.df['ASR_ID'].map(self.neighborhood)
+    self.df['rental_license'] = self.df['ASR_ID'].map(self.rental_license_number)
 
     self.df.to_excel(out_file_name, index=False)
     print "Done writing to {}!".format(out_file_name)
