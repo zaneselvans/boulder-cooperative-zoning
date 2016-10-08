@@ -14,7 +14,7 @@ def chunks(l, n):
 class ZoningInfo:
   def __init__(self):
     self.start_time = datetime.now()
-    self.df = pd.read_excel("input/{}".format(file_name), converters={'ASR_ID': str})
+    self.df = pd.read_excel(file_name, converters={'ASR_ID': str})
     self.ids = self.df['ASR_ID']
     self.zoning = {}
     self.address = {}
