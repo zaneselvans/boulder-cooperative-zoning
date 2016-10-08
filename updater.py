@@ -47,22 +47,23 @@ class ZoningInfo:
           self.neighborhood[asr_id] = attributes['NEIGHBRHD']
         except (KeyError, IndexError):
           error_ids.append(asr_id)
-        else:
-          print "{:.6f}% {:10} {:30} {:10} {}".format(
-            ((chunk_size * chunk_number) + record_number) / float(number_of_ids),
-            asr_id,
-            self.address[asr_id],
-            self.zoning[asr_id],
-            "RENTAL" if asr_id in self.rental_license_number else ""
-          )
 
       r = requests.get(QUERY.format("RentalInquiry", ",".join(chunk)))
       for record_number, record in enumerate(json.loads(r.text)['features']):
-        try:
-          attributes = record['attribues']
-          self.rental_license_number[asr_id] = attributes['PROP_NO']
-        except (KeyError, IndexError):
-          None
+        attributes = record['attributes']
+        asr_id = attributes['ASR_ID']
+        self.rental_license_number[asr_id] = attributes['PROP_NO']
+
+      for row_number, asr_id in enumerate(chunk):
+        print "{:10} out of {:10} ASR_ID:{:10} {:30} {:10} {}".format(
+          ((chunk_size * chunk_number) + row_number),
+          number_of_ids,
+          asr_id,
+          self.address.get(asr_id),
+          self.zoning.get(asr_id),
+          "RENTAL" if asr_id in self.rental_license_number else ""
+        )
+
     print "\nError ASR_ID's: {}\n".format(error_ids)
     print "Done getting all zones!"
 
