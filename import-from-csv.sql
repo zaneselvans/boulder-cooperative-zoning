@@ -18,7 +18,8 @@ CREATE TABLE properties(
   "address" TEXT,
   "lot_size" INTEGER,
   "neighborhood" TEXT,
-  "rental_license" TEXT
+  "rental_license" TEXT,
+  "geometry" TEXT
 );
 
 .mode csv
