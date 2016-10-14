@@ -1,7 +1,11 @@
 # Install Notes
 
 ## Rental Info Scraping
+```
 pip install cython pandas xlrd lxml openpyxl
+```
+
+(If you're on OS X, and have homebrew installed, `brew install python`)
 
 If you get an error when writing the file that says:
 ```
