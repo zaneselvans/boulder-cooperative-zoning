@@ -44,3 +44,8 @@ Then, inside the `sqlite3` console, type:
 
 This *drops* existing `properties` table and imports from `output/output.csv` into
 a new `properties` tables.
+
+
+## Getting all ID's for city propertyies
+URL:
+https://maps.bouldercolorado.gov/arcgis/rest/services/pds/AddressSearch/MapServer/0/query?where=1%3D1&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=ASR_ID&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=true&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=html
