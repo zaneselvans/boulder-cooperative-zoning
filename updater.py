@@ -71,7 +71,7 @@ class ZoningInfo:
     print "Done getting all zones!"
 
   def write(self):
-    out_file_name = 'output/output.xlsx'
+    out_file_name = 'output/output.{}'
     print "Writing them out to {}...".format(out_file_name)
     self.df['zoning'] =         self.df['ASR_ID'].map(self.zoning)
     self.df['address'] =        self.df['ASR_ID'].map(self.address)
@@ -80,8 +80,12 @@ class ZoningInfo:
     self.df['rental_license'] = self.df['ASR_ID'].map(self.rental_license_number)
     self.df['geometry'] =       self.df['ASR_ID'].map(self.geometry)
 
-    self.df.to_excel(out_file_name, index=False)
-    print "Done writing to {}!".format(out_file_name)
+    self.df.to_excel(out_file_name.format('xlsx'), index=False)
+    print "Done writing to {}!".format(out_file_name.format('xlsx'))
+
+    self.df.to_csv(out_file_name.format('csv'), index=False)
+    print "Done writing to {}!".format(out_file_name.format('csv'))
+
     print "Started at {} and ended at {}".format(self.start_time.isoformat(), datetime.now().isoformat())
 
 
