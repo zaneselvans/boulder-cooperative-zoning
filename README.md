@@ -1,5 +1,6 @@
 # Install Notes
 
+## Rental Info Scraping
 pip install cython pandas xlrd lxml openpyxl
 
 If you get an error when writing the file that says:
@@ -26,3 +27,20 @@ brew link libxslt --force
 ```
 
 Then run `pip install lxml --upgrade` again. Then you should be abl
+
+
+## Importing to SQLite
+
+From command line:
+```
+sqlite3 output/db.sqlite3
+```
+
+
+Then, inside the `sqlite3` console, type:
+```
+.read import-from-csv.sql
+```
+
+This *drops* existing `properties` table and imports from `output/output.csv` into
+a new `properties` tables.
