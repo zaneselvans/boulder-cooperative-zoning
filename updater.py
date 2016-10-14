@@ -3,7 +3,7 @@ import requests
 import json
 from datetime import datetime
 
-QUERY = 'https://maps.bouldercolorado.gov/arcgis/rest/services/pds/{}/MapServer/1/query?where=ASR_ID+IN+({})&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=false&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
+QUERY = 'https://maps.bouldercolorado.gov/arcgis/rest/services/pds/{}/MapServer/1/query?where=ASR_ID+IN+({})&text=&objectIds=&time=&geometry=&geometryType=esriGeometryEnvelope&inSR=&spatialRel=esriSpatialRelIntersects&relationParam=&outFields=*&returnGeometry=true&returnTrueCurves=false&maxAllowableOffset=&geometryPrecision=&outSR=&returnIdsOnly=false&returnCountOnly=false&orderByFields=&groupByFieldsForStatistics=&outStatistics=&returnZ=false&returnM=false&gdbVersion=&returnDistinctValues=false&resultOffset=&resultRecordCount=&f=pjson'
 
 file_name = 'ResidentialBuildingSizes20161003.xlsx'
 
@@ -20,6 +20,7 @@ class ZoningInfo:
     self.address = {}
     self.lot_size = {}
     self.neighborhood = {}
+    self.geometry = {}
     self.rental_license_number = {}
 
   def update(self):
@@ -45,6 +46,8 @@ class ZoningInfo:
           self.address[asr_id] =      attributes['ADDRESS']
           self.lot_size[asr_id] =     attributes['AREASQFT']
           self.neighborhood[asr_id] = attributes['NEIGHBRHD']
+          self.geometry[asr_id] =     record['geometry']['rings'][0]
+
         except (KeyError, IndexError):
           error_ids.append(asr_id)
 
@@ -75,6 +78,7 @@ class ZoningInfo:
     self.df['lot_size'] =       self.df['ASR_ID'].map(self.lot_size)
     self.df['neighborhood'] =   self.df['ASR_ID'].map(self.neighborhood)
     self.df['rental_license'] = self.df['ASR_ID'].map(self.rental_license_number)
+    self.df['geometry'] =       self.df['ASR_ID'].map(self.geometry)
 
     self.df.to_excel(out_file_name, index=False)
     print "Done writing to {}!".format(out_file_name)
